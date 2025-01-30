@@ -1,0 +1,48 @@
+// lib/screens/home_screen.dart
+import 'package:flutter/material.dart';
+import 'package:e_commerce_app/models/product.dart';
+import 'package:e_commerce_app/services/api_service.dart';
+import 'package:e_commerce_app/widgets/product_card.dart';
+
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final ApiService _apiService = ApiService();
+  late Future<List<Product>> _products;
+
+  @override
+  void initState() {
+    super.initState();
+    _products = _apiService.getProducts();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('E-commerce App'),
+      ),
+      body: FutureBuilder<List<Product>>(
+        future: _products,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                final product = snapshot.data![index];
+                return ProductCard(product: product);
+              },
+            );
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        },
+      ),
+    );
+  }
+}
