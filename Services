@@ -1,0 +1,18 @@
+// lib/services/api_service.dart
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:e_commerce_app/models/product.dart';
+
+class ApiService {
+  final String baseUrl = 'https://fakestoreapi.com/products'; // API simulada
+
+  Future<List<Product>> getProducts() async {
+    final response = await http.get(Uri.parse(baseUrl));
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => Product.fromJson(json)).toList();
+    } else {
+      throw Exception('Error al cargar los productos');
+    }
+  }
+}
